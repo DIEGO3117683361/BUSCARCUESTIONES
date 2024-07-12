@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsqueda de Datos</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            text-align: center;
+            background: #111;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+            max-width: 90%;
+            max-height: 90%;
+            width: 400px;
+            overflow-y: auto;
+            transition: background 0.3s;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #fff;
+            transition: color 0.3s;
+        }
+
+        .input-field {
+            padding: 10px;
+            margin-top: 10px;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            background: #000;
+            color: #fff;
+            font-size: 16px;
+            width: 80%;
+            transition: background 0.3s, border 0.3s, color 0.3s;
+        }
+
+        .button, .back-button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #fff;
+            color: #000;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .button:hover, .back-button:hover {
+            background-color: #444;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .searching-banner {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #000;
+            padding: 10px;
+            border-radius: 5px;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+
+        .toggle-dark-mode {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .toggle-dark-mode input {
+            display: none;
+        }
+
+        .toggle-dark-mode span {
+            font-size: 14px;
+            color: #fff;
+            margin-left: 10px;
+        }
+
+        .toggle-dark-mode .slider {
+            width: 40px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 20px;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .toggle-dark-mode .slider:before {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            top: 1px;
+            left: 1px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-dark-mode input:checked + .slider {
+            background: #666;
+        }
+
+        .toggle-dark-mode input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        body.light-mode {
+            background-color: #fff;
+            color: #000;
+        }
+
+        body.light-mode .container {
+            background: #f1f1f1;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .logo {
+            color: #000;
+        }
+
+        body.light-mode .input-field {
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+        }
+
+        body.light-mode .button, body.light-mode .back-button {
+            background-color: #000;
+            color: #fff;
+        }
+
+        body.light-mode .searching-banner {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+        }
+
+        body.light-mode .toggle-dark-mode span {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">A  S  C  L  E  P  I  O</div>
+        <input type="text" id="code-input" class="input-field" placeholder="Ingrese el ID aquí...">
+        <button class="button" onclick="buscarCodigo()">Buscar</button>
+        <div id="result" class="result"></div>
+        <div id="searching-banner" class="searching-banner">Buscando...</div>
+        <button class="back-button" onclick="window.location.href='https://sites.google.com/view/asclepiomiembros/cuestiones'">Salir</button>
+    </div>
+    <div class="toggle-dark-mode">
+        <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
+        <label for="dark-mode-toggle" class="slider"></label>
+        <span></span>
+    </div>
+
+    <script>
+        function buscarCodigo() {
+            const code = document.getElementById('code-input').value;
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz-xJZTI_HhgJGlCs_oPkuNOJQgpz2v6pF8PZIBhpGTQKDtRqR-dC3x2t6Oe2jmDFPXwg/exec';
+            const searchingBanner = document.getElementById('searching-banner');
+            const resultContainer = document.getElementById('result');
+
+            if (!code) {
+                resultContainer.innerHTML = '<p>Por favor, ingrese un código.</p>';
+                return;
+            }
+
+            searchingBanner.style.display = 'block';
+
+            fetch(`${scriptURL}?codigo=${code}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta de la red');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Datos recibidos:', data);
+                    if (data.success) {
+                        resultContainer.innerHTML = `
+                            <p><strong>Datos encontrados:</strong></p>
+                            <p>ID de la cuestión: ${data.codigo}</p>
+                            <p>Título: ${data.nombre}</p>
+                            <p>Contenido: ${data.documento}</p>
+                            <p>Bibliografía: ${data.correo}</p>
+                            <p>Notas: ${data.telefono}</p>
+                            <p>Otros Datos: ${data.otrosDatos}</p>
+                        `;
+                    } else {
+                        resultContainer.innerHTML = '<p>No se encontraron datos para el código ingresado.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultContainer.innerHTML = '<p>Error al buscar los datos. Intente nuevamente.</p>';
+                })
+                .finally(() => {
+                    searchingBanner.style.display = 'none';
+                });
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('light-mode');
+        }
+    </script>
+</body>
+</html>
